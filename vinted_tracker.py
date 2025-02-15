@@ -28,11 +28,15 @@ async def send_telegram_notification(message):
     except Exception as e:
         print(f"❌ ERREUR - Échec de l'envoi : {e}")
 
-# **Fonction de recherche sur Vinted**
+# **Fonction de recherche sur Vinted avec User-Agent**
 def search_vinted():
     """Scrape Vinted pour voir si un produit PS1 à 10€ max apparaît."""
     url = "https://www.vinted.fr/api/v2/search?q=PS1&price_to=10"
-    response = requests.get(url)
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    }
+
+    response = requests.get(url, headers=headers)
 
     if response.status_code == 200:
         data = response.json()
@@ -59,5 +63,5 @@ if __name__ == "__main__":
             if price and float(price) <= 10:
                 send_telegram_notification(f"🔥 Nouveau produit : {title} - {price}€ !")
 
-        print("🔄 Fin du cycle, prochaine vérification dans 60 secondes...")  # ✅ AJOUT DE CETTE LIGNE
+        print("🔄 Fin du cycle, prochaine vérification dans 60 secondes...")  
         time.sleep(60)  # Vérifie toutes les 60 secondes
