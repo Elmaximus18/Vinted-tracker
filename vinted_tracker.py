@@ -21,6 +21,7 @@ if TELEGRAM_TOKEN is None or TELEGRAM_TOKEN == "":
 
 print(f"✅ DEBUG - Token récupéré : {TELEGRAM_TOKEN}")  # Debug pour vérifier le token
 bot = Bot(token=TELEGRAM_TOKEN)
+send_telegram_notification("🚀 Test : Ceci est un message de test depuis Railway !")
 
 # Configuration des logs
 logging.basicConfig(
