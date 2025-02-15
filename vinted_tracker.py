@@ -11,8 +11,15 @@ VINTED_URL = os.getenv("VINTED_URL")
 CHECK_INTERVAL = 60  # Vérification toutes les 60 secondes
 
 # Initialisation du bot Telegram
-print(f"🔍 DEBUG - Token récupéré : {TELEGRAM_TOKEN}")
-logging.info(f"🔍 DEBUG - Token récupéré : {TELEGRAM_TOKEN}")
+import os
+
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
+
+if TELEGRAM_TOKEN is None or TELEGRAM_TOKEN == "":
+    print("❌ ERREUR : TELEGRAM_TOKEN est vide ou non défini !")
+    exit(1)  # Arrête le script si le token est absent
+
+print(f"✅ DEBUG - Token récupéré : {TELEGRAM_TOKEN}")  # Debug pour vérifier le token
 bot = Bot(token=TELEGRAM_TOKEN)
 
 # Configuration des logs
