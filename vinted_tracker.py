@@ -10,19 +10,40 @@ TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 VINTED_URL = os.getenv("VINTED_URL")
 CHECK_INTERVAL = 60  # Vérification toutes les 60 secondes
 
-# Initialisation du bot Telegram
 import os
+import logging
+from telegram import Bot
 
+# Variables d'environnement
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
+# Vérification du Token
 if TELEGRAM_TOKEN is None or TELEGRAM_TOKEN == "":
     print("❌ ERREUR : TELEGRAM_TOKEN est vide ou non défini !")
     exit(1)  # Arrête le script si le token est absent
 
 print(f"✅ DEBUG - Token récupéré : {TELEGRAM_TOKEN}")  # Debug pour vérifier le token
 bot = Bot(token=TELEGRAM_TOKEN)
-send_telegram_notification("🚀 Test : Ceci est un message de test depuis Railway !")
 
+# Fonction d'envoi de message
+def send_telegram_notification(message):
+    """Envoie une notification Telegram."""
+    try:
+        print(f"✅ DEBUG - Envoi du message : {message}")
+        logging.info(f"✅ DEBUG - Envoi du message : {message}")
+        bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=message)
+    except Exception as e:
+        print(f"❌ ERREUR - Échec de l'envoi : {e}")
+        logging.error(f"❌ ERREUR - Échec de l'envoi : {e}")
+
+# Test immédiat au démarrage
+print("🔍 DEBUG : Fonction send_telegram_notification appelée")
+logging.info("🔍 DEBUG : Fonction send_telegram_notification appelée")
+send_telegram_notification("🚀 Test immédiat depuis Railway !")
+
+if __name__ == "__main__":
+    print("✅ Le bot tourne correctement !")
 # Configuration des logs
 logging.basicConfig(
     filename="vinted_tracker.log",
