@@ -2,11 +2,11 @@ import os
 import requests
 import logging
 import time
+import subprocess
 from telegram import Bot
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
-from webdriver_manager.chrome import ChromeDriverManager
 
 # Variables d'environnement
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
@@ -32,28 +32,37 @@ async def send_telegram_notification(message):
     except Exception as e:
         print(f"❌ ERREUR - Échec de l'envoi : {e}")
 
+# **Installation de Chrome et du WebDriver**
+def install_chrome():
+    """Installe Chrome et le WebDriver sur Railway."""
+    print("🔧 Installation de Chrome et du WebDriver...")
+    subprocess.run("wget -q -O /tmp/chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb", shell=True)
+    subprocess.run("apt-get update && apt-get install -y /tmp/chrome.deb", shell=True)
+    subprocess.run("wget -q -O /tmp/chromedriver.zip https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip", shell=True)
+    subprocess.run("unzip /tmp/chromedriver.zip -d /usr/local/bin/", shell=True)
+    print("✅ Chrome et WebDriver installés.")
+
 # **Fonction de recherche sur Vinted avec Selenium**
 def search_vinted():
     """Scrape Vinted en simulant un vrai navigateur avec Selenium."""
+    install_chrome()  # Installation de Chrome avant l'exécution
+
     url = "https://www.vinted.fr/catalog?search_text=PS1&price_to=10"
 
-    # Configuration de Selenium avec Chrome
     options = webdriver.ChromeOptions()
-    options.add_argument("--headless")  # Exécution sans interface graphique
-    options.add_argument("--disable-gpu")
+    options.add_argument("--headless")
     options.add_argument("--no-sandbox")
-    options.add_argument("--window-size=1920x1080")
     options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--window-size=1920x1080")
+    options.binary_location = "/usr/bin/google-chrome"
 
-    service = Service(ChromeDriverManager().install())
+    service = Service("/usr/local/bin/chromedriver")
     driver = webdriver.Chrome(service=service, options=options)
 
-    # Ouvrir la page et attendre qu'elle charge
     driver.get(url)
-    driver.implicitly_wait(5)  # Temps d'attente pour s'assurer du chargement
+    driver.implicitly_wait(5)
 
     try:
-        # Sélectionner les annonces sur la page
         items = driver.find_elements(By.CLASS_NAME, "feed-grid__item")
         results = []
 
@@ -66,7 +75,7 @@ def search_vinted():
                 print(f"✅ Produit trouvé : {title} - {price}€ ({link})")
                 results.append({"title": title, "price": price, "link": link})
             except Exception:
-                continue  # Si un élément est mal formaté, on l'ignore
+                continue
 
         driver.quit()
         return results
