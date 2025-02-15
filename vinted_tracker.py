@@ -12,6 +12,7 @@ CHECK_INTERVAL = 60  # Vérification toutes les 60 secondes
 
 import os
 import logging
+import asyncio
 from telegram import Bot
 
 # Variables d'environnement
@@ -26,13 +27,13 @@ if TELEGRAM_TOKEN is None or TELEGRAM_TOKEN == "":
 print(f"✅ DEBUG - Token récupéré : {TELEGRAM_TOKEN}")  # Debug pour vérifier le token
 bot = Bot(token=TELEGRAM_TOKEN)
 
-# Fonction d'envoi de message
-def send_telegram_notification(message):
+# Fonction d'envoi de message (asynchrone)
+async def send_telegram_notification(message):
     """Envoie une notification Telegram."""
     try:
         print(f"✅ DEBUG - Envoi du message : {message}")
         logging.info(f"✅ DEBUG - Envoi du message : {message}")
-        bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=message)
+        await bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=message)  # ✅ Ajout du "await"
     except Exception as e:
         print(f"❌ ERREUR - Échec de l'envoi : {e}")
         logging.error(f"❌ ERREUR - Échec de l'envoi : {e}")
@@ -40,7 +41,7 @@ def send_telegram_notification(message):
 # Test immédiat au démarrage
 print("🔍 DEBUG : Fonction send_telegram_notification appelée")
 logging.info("🔍 DEBUG : Fonction send_telegram_notification appelée")
-send_telegram_notification("🚀 Test immédiat depuis Railway !")
+asyncio.run(send_telegram_notification("🚀 Test immédiat depuis Railway !"))  # ✅ Ajout de "asyncio.run()"
 
 if __name__ == "__main__":
     print("✅ Le bot tourne correctement !")
