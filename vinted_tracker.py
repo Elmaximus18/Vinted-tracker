@@ -32,21 +32,26 @@ async def send_telegram_notification(message):
     except Exception as e:
         print(f"❌ ERREUR - Échec de l'envoi : {e}")
 
-# **Installation de Chrome et du WebDriver**
-def install_chrome():
-    """Installe Chrome et le WebDriver sur Railway."""
-    print("🔧 Installation de Chrome et du WebDriver...")
-    subprocess.run("apt-get update && apt-get install -y wget unzip", shell=True, check=True)
-    subprocess.run("wget -q -O /tmp/chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb", shell=True, check=True)
-    subprocess.run("apt-get install -y /tmp/chrome.deb", shell=True, check=True)
-    subprocess.run("wget -q -O /tmp/chromedriver.zip https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip", shell=True, check=True)
-    subprocess.run("unzip /tmp/chromedriver.zip -d /usr/local/bin/", shell=True, check=True)
-    print("✅ Chrome et WebDriver installés.")
+# **Télécharger Chrome et WebDriver manuellement**
+def setup_chrome():
+    """Télécharge et configure Chrome et WebDriver pour Railway."""
+    print("🔧 Téléchargement de Chrome et WebDriver...")
+    os.makedirs("/tmp/chrome", exist_ok=True)
+
+    # Télécharger Chrome
+    subprocess.run("wget -q -O /tmp/chrome/chrome-linux.zip https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb", shell=True)
+    subprocess.run("dpkg -x /tmp/chrome/chrome-linux.zip /tmp/chrome/", shell=True)
+
+    # Télécharger le WebDriver
+    subprocess.run("wget -q -O /tmp/chrome/chromedriver.zip https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip", shell=True)
+    subprocess.run("unzip /tmp/chrome/chromedriver.zip -d /tmp/chrome/", shell=True)
+
+    print("✅ Chrome et WebDriver configurés.")
 
 # **Fonction de recherche sur Vinted avec Selenium**
 def search_vinted():
     """Scrape Vinted en simulant un vrai navigateur avec Selenium."""
-    install_chrome()  # Installation de Chrome avant l'exécution
+    setup_chrome()  # Installation de Chrome avant l'exécution
 
     url = "https://www.vinted.fr/catalog?search_text=PS1&price_to=10"
 
@@ -55,9 +60,9 @@ def search_vinted():
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--window-size=1920x1080")
-    options.binary_location = "/usr/bin/google-chrome"
+    options.binary_location = "/tmp/chrome/opt/google/chrome/chrome"
 
-    service = Service("/usr/local/bin/chromedriver")
+    service = Service("/tmp/chrome/chromedriver")
     driver = webdriver.Chrome(service=service, options=options)
 
     driver.get(url)
