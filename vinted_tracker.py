@@ -36,10 +36,11 @@ async def send_telegram_notification(message):
 def install_chrome():
     """Installe Chrome et le WebDriver sur Railway."""
     print("🔧 Installation de Chrome et du WebDriver...")
-    subprocess.run("wget -q -O /tmp/chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb", shell=True)
-    subprocess.run("apt-get update && apt-get install -y /tmp/chrome.deb", shell=True)
-    subprocess.run("wget -q -O /tmp/chromedriver.zip https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip", shell=True)
-    subprocess.run("unzip /tmp/chromedriver.zip -d /usr/local/bin/", shell=True)
+    subprocess.run("apt-get update && apt-get install -y wget unzip", shell=True, check=True)
+    subprocess.run("wget -q -O /tmp/chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb", shell=True, check=True)
+    subprocess.run("apt-get install -y /tmp/chrome.deb", shell=True, check=True)
+    subprocess.run("wget -q -O /tmp/chromedriver.zip https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip", shell=True, check=True)
+    subprocess.run("unzip /tmp/chromedriver.zip -d /usr/local/bin/", shell=True, check=True)
     print("✅ Chrome et WebDriver installés.")
 
 # **Fonction de recherche sur Vinted avec Selenium**
