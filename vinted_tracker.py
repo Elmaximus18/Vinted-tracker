@@ -11,6 +11,8 @@ VINTED_URL = os.getenv("VINTED_URL")
 CHECK_INTERVAL = 60  # Vérification toutes les 60 secondes
 
 # Initialisation du bot Telegram
+print(f"🔍 DEBUG - Token récupéré : {TELEGRAM_TOKEN}")
+logging.info(f"🔍 DEBUG - Token récupéré : {TELEGRAM_TOKEN}")
 bot = Bot(token=TELEGRAM_TOKEN)
 
 # Configuration des logs
