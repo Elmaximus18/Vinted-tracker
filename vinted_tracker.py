@@ -42,6 +42,7 @@ def search_vinted():
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--window-size=1920x1080")
 
+    # Initialisation du driver Chrome sans préciser de binary_location
     driver = uc.Chrome(options=options)
 
     driver.get(url)
