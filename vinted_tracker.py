@@ -6,13 +6,16 @@ from telegram import Bot
 # Variables d'environnement
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
+VINTED_SESSION = os.getenv("VINTED_SESSION")  # Récupération du cookie de session
 
-# Vérification du Token
-if not TELEGRAM_TOKEN or not TELEGRAM_CHAT_ID:
-    print("❌ ERREUR : TELEGRAM_TOKEN ou TELEGRAM_CHAT_ID non défini !")
+# Vérification des variables d'environnement
+if not TELEGRAM_TOKEN or not TELEGRAM_CHAT_ID or not VINTED_SESSION:
+    print("❌ ERREUR : Une variable d'environnement est manquante !")
     exit(1)
 
 print(f"✅ DEBUG - Token récupéré : {TELEGRAM_TOKEN}")
+print(f"✅ DEBUG - Session Vinted récupérée : {VINTED_SESSION[:10]}...")  # Affiche une partie du cookie pour vérifier qu'il est bien récupéré
+
 bot = Bot(token=TELEGRAM_TOKEN)
 
 # Fonction d'envoi de message sur Telegram
@@ -28,7 +31,7 @@ def send_telegram_notification(message):
 
 # Fonction de recherche sur Vinted via API
 def search_vinted():
-    """Interroge l'API de Vinted pour récupérer des annonces en simulant un vrai navigateur."""
+    """Interroge l'API de Vinted pour récupérer des annonces en simulant un utilisateur connecté."""
     url = "https://www.vinted.fr/api/v2/catalog/items"
     params = {
         "search_text": "PS1",
@@ -37,9 +40,10 @@ def search_vinted():
         "order": "newest_first"
     }
     
-    # Ajouter un User-Agent pour éviter l'erreur 403
+    # Ajouter un User-Agent et le cookie Vinted pour éviter l'erreur 401
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+        "Cookie": f"_vinted_session={VINTED_SESSION}"
     }
 
     response = requests.get(url, params=params, headers=headers)
