@@ -2,9 +2,12 @@ import os
 import requests
 import logging
 import time
-import undetected_chromedriver as uc
-from telegram import Bot
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
+from webdriver_manager.chrome import ChromeDriverManager
+from telegram import Bot
 
 # Variables d'environnement
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
@@ -30,20 +33,21 @@ async def send_telegram_notification(message):
     except Exception as e:
         print(f"❌ ERREUR - Échec de l'envoi : {e}")
 
-# **Fonction de recherche sur Vinted avec `undetected_chromedriver`**
+# **Fonction de recherche sur Vinted avec Selenium**
 def search_vinted():
     """Scrape Vinted en simulant un vrai navigateur avec Selenium."""
     url = "https://www.vinted.fr/catalog?search_text=PS1&price_to=10"
 
-    # Initialisation de Chrome avec `undetected_chromedriver`
-    options = uc.ChromeOptions()
-    options.add_argument("--headless")  # Exécution sans interface graphique
+    # Configuration de Chrome pour Selenium
+    options = Options()
+    options.add_argument("--headless")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--window-size=1920x1080")
 
-    # Initialisation du driver Chrome
-    driver = uc.Chrome(options=options)
+    # Utilisation de WebDriver Manager pour installer ChromeDriver automatiquement
+    service = Service(ChromeDriverManager().install())
+    driver = webdriver.Chrome(service=service, options=options)
 
     driver.get(url)
     driver.implicitly_wait(5)
