@@ -14,7 +14,7 @@ if not TELEGRAM_TOKEN or not TELEGRAM_CHAT_ID or not VINTED_SESSION:
     exit(1)
 
 print(f"✅ DEBUG - Token récupéré : {TELEGRAM_TOKEN}")
-print(f"✅ DEBUG - Session Vinted récupérée : {VINTED_SESSION[:10]}...")  # Affiche une partie du cookie pour vérifier qu'il est bien récupéré
+print(f"✅ DEBUG - Session Vinted récupérée : {VINTED_SESSION[:10]}...")  # Vérification du cookie
 
 bot = Bot(token=TELEGRAM_TOKEN)
 
@@ -28,6 +28,25 @@ def send_telegram_notification(message):
         print(f"✅ DEBUG - Réponse Telegram : {response.json()}")
     except Exception as e:
         print(f"❌ ERREUR - Envoi échoué : {e}")
+
+# Fonction de test de l'authentification Vinted
+def test_vinted_auth():
+    """Teste si le cookie de session permet d'accéder à Vinted."""
+    url = "https://www.vinted.fr/api/v2/users/me"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+        "Cookie": f"_vinted_session={VINTED_SESSION}"
+    }
+
+    response = requests.get(url, headers=headers)
+
+    if response.status_code == 200:
+        print("✅ DEBUG - Authentification réussie avec le cookie Vinted !")
+        print(f"Réponse : {response.json()}")
+        return True
+    else:
+        print(f"❌ ERREUR - Le cookie est invalide (Code {response.status_code})")
+        return False
 
 # Fonction de recherche sur Vinted via API
 def search_vinted():
@@ -65,6 +84,12 @@ def search_vinted():
 # Boucle principale
 if __name__ == "__main__":
     print("✅ Le bot tourne correctement !")
+
+    # Test d'authentification avant de chercher des annonces
+    if not test_vinted_auth():
+        print("❌ ERREUR - Authentification échouée, vérifie le cookie VINTED_SESSION.")
+        exit(1)
+
     while True:
         results = search_vinted()
         
