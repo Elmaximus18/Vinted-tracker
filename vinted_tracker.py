@@ -28,7 +28,7 @@ def send_telegram_notification(message):
 
 # Fonction de recherche sur Vinted via API
 def search_vinted():
-    """Interroge l'API de Vinted pour récupérer des annonces."""
+    """Interroge l'API de Vinted pour récupérer des annonces en simulant un vrai navigateur."""
     url = "https://www.vinted.fr/api/v2/catalog/items"
     params = {
         "search_text": "PS1",
@@ -36,8 +36,13 @@ def search_vinted():
         "per_page": 5,  # Nombre d'annonces à récupérer
         "order": "newest_first"
     }
+    
+    # Ajouter un User-Agent pour éviter l'erreur 403
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    }
 
-    response = requests.get(url, params=params)
+    response = requests.get(url, params=params, headers=headers)
     
     if response.status_code == 200:
         data = response.json()
