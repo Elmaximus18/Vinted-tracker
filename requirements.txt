@@ -3,3 +3,5 @@ python-telegram-bot
 selenium
 webdriver-manager
 undetected-chromedriver
+setuptools
+wheel
