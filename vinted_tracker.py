@@ -2,10 +2,8 @@ import os
 import requests
 import logging
 import time
-import subprocess
+import undetected_chromedriver as uc
 from telegram import Bot
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 
 # Variables d'environnement
@@ -32,38 +30,19 @@ async def send_telegram_notification(message):
     except Exception as e:
         print(f"❌ ERREUR - Échec de l'envoi : {e}")
 
-# **Télécharger Chrome et WebDriver manuellement**
-def setup_chrome():
-    """Télécharge et configure Chrome et WebDriver pour Railway."""
-    print("🔧 Téléchargement de Chrome et WebDriver...")
-    os.makedirs("/tmp/chrome", exist_ok=True)
-
-    # Télécharger Chrome
-    subprocess.run("wget -q -O /tmp/chrome/chrome-linux.zip https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb", shell=True)
-    subprocess.run("dpkg -x /tmp/chrome/chrome-linux.zip /tmp/chrome/", shell=True)
-
-    # Télécharger le WebDriver
-    subprocess.run("wget -q -O /tmp/chrome/chromedriver.zip https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip", shell=True)
-    subprocess.run("unzip /tmp/chrome/chromedriver.zip -d /tmp/chrome/", shell=True)
-
-    print("✅ Chrome et WebDriver configurés.")
-
-# **Fonction de recherche sur Vinted avec Selenium**
+# **Fonction de recherche sur Vinted avec `undetected_chromedriver`**
 def search_vinted():
     """Scrape Vinted en simulant un vrai navigateur avec Selenium."""
-    setup_chrome()  # Installation de Chrome avant l'exécution
-
     url = "https://www.vinted.fr/catalog?search_text=PS1&price_to=10"
 
-    options = webdriver.ChromeOptions()
-    options.add_argument("--headless")
+    # Initialisation de Chrome avec `undetected_chromedriver`
+    options = uc.ChromeOptions()
+    options.add_argument("--headless")  # Exécution sans interface graphique
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--window-size=1920x1080")
-    options.binary_location = "/tmp/chrome/opt/google/chrome/chrome"
 
-    service = Service("/tmp/chrome/chromedriver")
-    driver = webdriver.Chrome(service=service, options=options)
+    driver = uc.Chrome(options=options)
 
     driver.get(url)
     driver.implicitly_wait(5)
